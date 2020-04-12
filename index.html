@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Remote voter</title>
+    <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="flags32-both.css">
+    <style>
+        .actriz {
+            height: 75vh;
+            flex-basis: 100%;
+        }
+
+        h1 img.inline {
+            filter: brightness(2);
+        }
+
+        .actriz>.midata {
+            transition: all 0.4s ease-in-out;
+            background-color: rgba(255, 255, 255, 0.8);
+        }
+
+        .actriz:hover>.midata {
+            transform: none;
+        }
+
+        .actriz>.votar {
+            position: absolute;
+            top: -20%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            transition: all 0.3s ease-in-out;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        .actriz:hover>.votar {
+            top: 40%;
+        }
+
+        .actriz:hover .miimagen {
+            transform: scale(1.3);
+            transform-origin: center;
+        }
+
+        .actriz .miimagen {
+            object-position: 50% 50%;
+            object-fit: contain;
+            transition: 0.6s ease-out;
+            max-width: unset;
+            height: 100%;
+            width: 100%;
+            filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.3));
+        }
+
+        .actriz .contenedorimagen {
+            height: calc(100% - 60px);
+            overflow: hidden;
+            background-color: #424242;
+            box-shadow: inset 0 0 40px rgb(0, 0, 0);
+        }
+
+        i.tip:hover:before {
+            opacity: 1;
+        }
+
+        i.tip:before {
+            content: attr(aria-label);
+            opacity: 0;
+            position: absolute;
+            top: 30px;
+            right: -90px;
+            font-size: 14px;
+            width: 100px;
+            padding: 10px;
+            color: #fff;
+            background-color: #555;
+            border-radius: 3px;
+            pointer-events: none;
+        }
+
+    </style>
+
+</head>
+
+<body class="p-6 bg-gray-200">
+    <h1 class="text-center text-4xl font-light text-gray-500"><img src="logo.png" class="inline"> <span class="uppercase text-2xl font-extrabold text-gray-800">porn rater</span> <small>for</small> <span class="uppercase text-gray-600">models fantasy</span><button id="seeranking" class="mb-4 shadow-inner tracking-wide shadow-xl hover:bg-gray-800 bg-gray-600 uppercase text-sm px-8 py-3 rounded-lg text-white ml-3"><i class="fa fa-crown"></i> see Rankings</button></h1>
+    <main class="flex" style="min-height: 600px;">
+    </main>
+    <button id="refresca" class="mb-4 shadow-inner tracking-wide shadow-xl hover:bg-gray-800 bg-gray-600 uppercase text-xl px-8 py-3 rounded-lg text-white block mx-auto">Please, show me more girls!</button>
+    <footer>
+        <p class="text-center text-gray-600 text-sm">Made with <i class="fa fa-heart"></i> using Tailwind, Fontawesome, Google Sheets, Tabletop, JsonStorage, Pimpandhost and too many adult models lists and ranks.</p>
+    </footer>
+    <template id="miseccion">
+        <section class="group actriz w-auto relative m-4 p-2 shadow-lg bg-white rounded-lg overflow-hidden">
+            <button class="votar shadow-inner tracking-wide shadow-xl hover:bg-blue-500 bg-teal-500 uppercase text-3xl px-8 py-4 rounded-lg text-white"><i class="fa fa-heart fa-lg"></i> vote</button>
+            <div class="contenedorimagen w-100 rounded-lg">
+                <img class="miimagen" src="">
+            </div>
+            <div class="midata bg-white flex py-1 px-2 absolute bottom-0 left-0 right-0 transition-all transform translate-y-16 group-hover:translate-y-0 h-32">
+                <img class="imagen h-32 w-32 border-4 border-solid border-white transform -translate-y-12 object-cover rounded-full" src="">
+                <div class="pais f32 absolute top-0 mt-8 p-0 border-1 rounded-sm border-solid border-gray-800"></div>
+                <div class="mt-0 ml-4">
+                    <h3 class="nombre -mt-1 mb-1 text-2xl capitalize leading-tight font-semibold text-gray-900"></h3>
+                    <div class="datos -mt-1">
+                    </div>
+                    <div class="datos2 mt-1">
+                    </div>
+                    <p class="adicional mt-2 text-gray-400">
+                        <i class="fa fa-female fa-lg"></i>
+                        <i class="fa fa-venus-double fa-lg"></i>
+                        <i class="fa fa-venus-mars fa-lg"></i>
+                        <i class="fa fa-mask fa-lg"></i>
+                    </p>
+                </div>
+                <div class="rating border-solid border-2 border-gray-400 rounded-lg -mt-6 mr-1 col-span-2 bg-gray-300 ml-auto text-center p-3 text-gray-600"></div>
+            </div>
+        </section>
+    </template>
+    <template id="ranking">
+        <li class="group relative m-4 p-3 shadow-lg bg-gray-200 rounded-lg flex border-solid border-2 border-gray-400">
+            <div class="number text-right w-16 mr-5 text-gray-400 text-5xl font-bold"></div>
+            <div class="rating w-32 m-2 mr-5 text-center p-3 text-gray-600 bg-white rounded-lg"></div>
+            <img class="imagen h-24 w-24 border-4 border-solid border-white object-cover rounded-full" src="">
+            <h3 class="nombre ml-5 mt-4 text-3xl capitalize leading-tight font-semibold text-gray-900"></h3>
+            <div class="stats ml-auto text-gray-800 text-sm font-bold"></div>
+        </li>
+    </template>
+</body>
+<script src="https://kit.fontawesome.com/7a976a1c6a.js" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/lodash@4.17.15/lodash.min.js"></script>
+<script src="tabletop.min.js"></script>
+<script>
+    Date.prototype.getSign = function() {
+        var zodiaque = new Array("aries", "taurus", "gemini", "cancer", "leo", "virgo", "libra", "scorpio", "sagittarius", "capricorn", "aquarius", "pisces"),
+            d, w, m;
+        d = (367 * this.getFullYear() - Math.floor((7 * (this.getFullYear() + Math.floor((this.getMonth() + 1 + 9) / 12))) / 4) + Math.floor((275 * (this.getMonth() + 1)) / 9) + this.getDate() - 730530);
+        w = (282.9404 + 4.70935E-5 * d) - Math.floor((282.9404 + 4.70935E-5 * d) / 360.0) * 360.0;
+        m = (356.0470 + 0.9856002585 * d) - Math.floor((356.0470 + 0.9856002585 * d) / 360.0) * 360.0;
+        return zodiaque[Math.floor(((w + m) - Math.floor((w + m) / 360.0) * 360.0) / 30.0)];
+    };
+
+    function init() {
+        $('#refresca').hide();
+        var app = {};
+        Tabletop.init({
+            key: 'https://docs.google.com/spreadsheets/d/1Zc7PJoe_2rUbxaTWy0RCqwBlWhLn9vZNMUZlkhyz8Ns/edit?usp=sharing',
+            simpleSheet: false
+        }).then(function(data, tabletop) {
+            console.log('cargada google sheet');
+            app.actrices = data.actresses.elements;
+            app.pics = data.pics.elements;
+            app.actrices.forEach(function(item) {
+                let myid = item.id;
+                let mispics = app.pics.filter(pic => pic.ref === myid);
+                item.images = mispics.filter(pic => pic.kind !== "face");
+                item.thumb = mispics.find(pic => pic.kind === "face");
+            });
+
+            $.get("https://jsonstorage.net/api/items/758eb8f1-76ea-4d94-bbae-ce7673f7feea",
+                function(data, textStatus, jqXHR) {
+                    console.log('cargada jsonstorage');
+                    app.scores = data;
+                    drawcontester();
+                });
+
+        });
+
+        $('body').on('click', '#refresca', function() {
+            $(this).fadeOut();
+            let todos = app.rifa.map(actriz => actriz.id);
+            let parejas = pairs(todos);
+            parejas.forEach(function(pair) {
+                puntuacion(pair[0], pair[1], 0.5);
+            });
+            let borrar = $('main .actriz');
+            eliminaritemsDOM(borrar);
+            drawcontester();
+            let actrices = $('main .actriz');
+            anadiritemDOM(actrices);
+        });
+
+        $('body').on('click', '#seeranking', function() {
+            if ($(this).hasClass('mostrado')) {
+                $(this).fadeOut(300, function() {
+                    let borrar = $('main #miranking');
+                    eliminaritemsDOM(borrar);
+                    drawcontester();
+                    let actrices = $('main .actriz');
+                    anadiritemDOM(actrices);
+                    $(this).removeClass('mostrado');
+                    $(this).html('<i class="fa fa-crown"></i> See rankings');
+                    $(this).fadeIn();
+                    $('#refresca').fadeIn();
+                });
+            } else {
+                $(this).fadeOut(300, function() {
+                    let borrar = $('main .actriz');
+                    eliminaritemsDOM(borrar);
+                    const rankedlist = _.sortBy(app.scores, ['rating', 'matches']);
+                    pintaranking(_.reverse(rankedlist));
+                    let ranking = $('main .rankinglist li');
+                    anadiritemDOM(ranking);
+                    $(this).addClass('mostrado');
+                    $(this).html('<i class="fa fa-chevron-left"></i> Return to Voting');
+                    $(this).fadeIn();
+                    $('#refresca').fadeOut();
+                });
+            }
+        });
+
+        $('main').on('click', '.actriz > .votar', function() {
+            let chosen = $(this).data('id');
+            let todos = app.rifa.map(actriz => actriz.id);
+            let otros = todos.filter(function(item) {
+                return item !== chosen;
+            });
+            otros.unshift(chosen);
+            // el ganador debe ir primero para que el resto empaten
+            let parejas = pairs(otros);
+            parejas.forEach(function(pair) {
+                puntuacion(pair[0], pair[1], (pair[0] === chosen ? 1 : 0.5));
+            });
+
+            $('#refresca').fadeOut();
+            guardarscores(app.scores);
+            let actrices = $('main .actriz');
+            eliminaritemsDOM(actrices);
+            drawcontester();
+            actrices = $('main .actriz');
+            anadiritemDOM(actrices);
+        });
+
+
+        function puntuacion(player1, player2, result) {
+            let score1 = app.scores.find(score => score.id === player1);
+            let score2 = app.scores.find(score => score.id === player2);
+            let elo = elorate(score1.rating, score2.rating, result);
+            score1.rating = elo[0];
+            score1.matches++;
+            score2.rating = elo[1];
+            score2.matches++;
+
+            if (result === 1) {
+                score1.wins++;
+                score2.loses++;
+                if (!score1.hasOwnProperty('typeofwin')) {
+                    score1.typeofwin = {};
+                }
+                if (score1.typeofwin.hasOwnProperty(app.categoria))
+                    score1.typeofwin[app.categoria]++;
+                else
+                    score1.typeofwin[app.categoria] = 1;
+
+            } else {
+                score1.ties++;
+                score2.ties++;
+            }
+        }
+
+
+        function elorate(rating1, rating2, result) {
+            const d = 400;
+            let k1 = 80;
+            let k2 = 80;
+            const delta = rating1 - rating2;
+            switch (true) {
+                case rating1 > 2400:
+                    k1 = 10;
+                    break;
+                case rating1 > 2000:
+                    k1 = 20;
+                    break;
+                case rating1 > 1600:
+                    k1 = 40;
+                    break;
+            }
+            switch (true) {
+                case rating2 > 2400:
+                    k2 = 10;
+                    break;
+                case rating2 > 2000:
+                    k2 = 20;
+                    break;
+                case rating2 > 1600:
+                    k2 = 40;
+                    break;
+            }
+            const myprob = 1 / (1 + Math.pow(10, delta / d));
+            const otherprob = 1 - myprob;
+            const myrating = rating1 + k1 * (result - otherprob);
+            if (result === 1) result = 0;
+            const otherrating = rating2 + k2 * (result - myprob);
+            return [Math.round(myrating), Math.round(otherrating)];
+        }
+
+        function drawcontester() {
+            let many = 2;
+            let ancho = $(window).width();
+            if (ancho > 1280) many = 3;
+            app.rifa = _.sampleSize(app.actrices, many);
+            app.categoria = pickcategory(app.rifa);
+
+            app.rifa.forEach(function(item) {
+                inicializapuntos(app.scores, item);
+                pinta(item);
+
+            });
+            actrices = $('main .actriz');
+            anadiritemDOM(actrices);
+        }
+
+        function pintaranking(array) {
+            $('main').prepend('<div id="miranking" class="w-full bg-white m-4 text-center"><h3 class="text-teal-600 text-5xl font-bold mt-6">Ranks</h3><ul class="rankinglist w-full p-8 pt-2"></ul></div>');
+            array.forEach(function(item, index) {
+
+                let miactriz = app.actrices.find(actriz => actriz.id === item.id);
+                if (miactriz) {
+                    let plantilla = $('#ranking').clone();
+                    let miplantilla = $(plantilla.html());
+                    if (miactriz.thumb)
+                        miplantilla.find('.imagen').attr('src', miactriz.thumb.url);
+                    miplantilla.find('.number').text(index + 1);
+                    miplantilla.find('.nombre').html(miactriz.name1);
+                    miplantilla.find('.rating').append('<p class="leading-tight text-2xl text-teal-800 font-bold"><i class="fa fa-crown"></i> ' + item.rating + '</p> <p class="uppercase text-sm"> ' + (item.matches === 0 ? 'no' : item.matches) + ' matches</p>');
+                    if (item.matches > 0) {
+                        miplantilla.find('.stats')
+                            .append('<span class="uppercase text-md ml-2">' + Math.round(100 * (item.wins / item.matches)) + '% wins</span>');
+                        console.log(Object.keys(item.typeofwin));
+                        if (Object.keys(item.typeofwin).length > 0) {
+                            let cadena = '';
+                            for (kind in item.typeofwin) {
+                                cadena += '<span class="ml-2 uppercase font-normal font-gray-300">' + kind + ': ' + item.typeofwin[kind] + '</span>';
+                            }
+                            console.log(cadena);
+                            miplantilla.find('.stats').append(cadena);
+                        }
+                    }
+                    miplantilla.hide().appendTo('.rankinglist');
+                }
+            });
+
+        }
+
+        function pinta(item) {
+            let mithumb = item.thumb;
+            let misfotos = item.images.filter(image => image.kind === app.categoria);
+            let mifoto = _.sample(misfotos);
+            let miscore = app.scores.find(score => score.id === item.id);
+            let miedad = tiempodesde(item.birthdate)
+            let miexperiencia = tiempodesde(item.started, item.finished);
+            let misigno = horoscopo(item.birthdate);
+            let plantilla = $('#miseccion').clone();
+            let miplantilla = $(plantilla.html());
+
+            miplantilla.find('.votar').attr('data-id', item.id);
+
+            if (mithumb) {
+                miplantilla.find('.imagen').attr('src', mithumb.url);
+                if (app.categoria)
+                    miplantilla.find('.miimagen').attr('src', mifoto.url);
+
+                else
+                    miplantilla.find('.miimagen').attr('src', mithumb.url);
+            }
+            if (item.link.length > 0)
+                miplantilla.find('.imagen').wrap('<a href="' + item.link + '" target="_blank"></a>');
+
+            if (item.countrycode.length > 0) {
+                miplantilla.find('.pais').html('<span class="flag ' + item.countrycode + '" title="' + item.birthplace + '"></span>');
+            }
+            if (item.started.length > 0) {
+                miplantilla.find('.datos2').append('<span title="experience" class="experiencia bg-teal-500 text-sm px-2 py-1 rounded-md text-white uppercase"><i class="fa fa-compass"></i> ' + miexperiencia + ' y. pro </span>');
+            }
+
+            if (item.finished.length > 0) {
+                miplantilla.find('.datos2').append('<span class="bg-gray-600 text-sm ml-1 px-2 py-1 rounded-md text-white uppercase">Retired in ' + item.finished + '</span>');
+            }
+            if (item.height.length > 0) {
+                miplantilla.find('.datos').append('<span class="altura text-sm text-gray-600">' + item.height + ' cm <i class="fa fa-arrows-alt-v text-gray-400"></i></span>');
+            }
+            if (item.weight.length > 0) {
+                miplantilla.find('.datos').append('<span class="peso ml-3 text-sm text-gray-600">' + item.weight + ' kg <i class="fa fa-weight text-gray-400"></i></span>');
+            }
+            if (item.eyes.length > 0) {
+                miplantilla.find('.datos').append('<span class="ojos ml-3 text-sm text-gray-600"><i class="fa fa-eye text-gray-400"></i> ' + item.eyes + '</span>');
+            }
+
+            if (item.solo.length > 0) {
+                miplantilla.find('.adicional .fa-female')
+                    .addClass('text-teal-800')
+                    .attr('aria-label', item.solo);
+            }
+            if (item.lesbo.length > 0) {
+                miplantilla.find('.adicional .fa-venus-double')
+                    .addClass('text-teal-800')
+                    .attr('aria-label', item.lesbo);
+            }
+            if (item.males.length > 0) {
+                miplantilla.find('.adicional .fa-venus-mars')
+                    .addClass('text-teal-800')
+                    .attr('aria-label', item.males);
+            }
+            if (item.kinks.length > 0) {
+                miplantilla.find('.adicional .fa-mask')
+                    .addClass('text-teal-800')
+                    .attr('aria-label', item.kinks);
+            }
+
+            miplantilla.find('.nombre').html(item.name1);
+
+            if (item.birthdate.length > 0) {
+                miplantilla.find('.nombre').append('<span class="ml-3 edad text-sm text-indigo-600 font-bold">' + miedad + ' y.o.</span>');
+                miplantilla.find('.nombre').append('<span class="uppercase astro text-sm ml-3 text-gray-500">' + misigno + '</span>');
+            }
+            if (miscore) {
+                miplantilla.find('.rating').append('<p class="text-2xl mb-2 leading-tight text-teal-800"><i class="fa fa-crown"></i><br>' + miscore.rating + ' </p><p class="uppercase text-xs"> ' + (miscore.matches === 0 ? 'no' : miscore.matches) + ' matches</p>');
+                if (miscore.matches > 0)
+                    miplantilla.find('.rating').append('<p class="uppercase text-xs">' + Math.round(100 * (miscore.wins / miscore.matches)) + '% wins</p>');
+            }
+            miplantilla.hide().appendTo('main');
+
+        }
+
+    }
+
+    function pickcategory(array) {
+        let salida = [];
+        array.forEach(function(item) {
+            if (salida) {
+                let mycategories = item.images.map(pick => pick.kind);
+                if (mycategories.length > 0) {
+                    salida.push(mycategories);
+                } else {
+                    salida = false;
+                }
+            }
+        });
+        if (!salida) return null;
+        let [a, b, c] = salida;
+        let todos = _.intersection(a, b, c);
+        let categoria = _.sample(todos);
+        return categoria;
+    }
+
+    function inicializapuntos(scores, item) {
+        let misdatos = false;
+        if (scores.length > 0) {
+            misdatos = scores.find(score => score.id === item.id);
+        }
+        if (!misdatos) {
+            misdatos = {};
+            misdatos.id = item.id;
+            misdatos.rating = 1500;
+            misdatos.matches = 0;
+            misdatos.wins = 0;
+            misdatos.ties = 0;
+            misdatos.loses = 0;
+            misdatos.typeofwin = {};
+            scores.push(misdatos);
+        }
+    }
+
+    function pairs(arr) {
+        var res = [],
+            l = arr.length;
+        for (var i = 0; i < l; ++i)
+            for (var j = i + 1; j < l; ++j)
+                res.push([arr[i], arr[j]]);
+        return res;
+    }
+
+
+    function guardarscores(data) {
+        let midata = JSON.stringify(data, null, 2);
+        $.ajax({
+            url: "https://jsonstorage.net/api/items/758eb8f1-76ea-4d94-bbae-ce7673f7feea",
+            type: "PUT",
+            data: midata,
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function(data, textStatus, jqXHR) {
+                console.log('guardado en jsonstorage');
+            }
+        });
+
+    }
+
+    function tiempodesde(date1, date2) {
+        date2 = typeof date2 === 'number' ? date2 : new Date().getFullYear();
+        let origen = date1.substr(-4);
+        return date2 - origen;
+    }
+
+    function horoscopo(date) {
+        let tab = date.split('/');
+        let j = tab[0] * 1;
+        let m = tab[1] - 1;
+        let a = tab[2] * 1;
+        let thedate = new Date(a, m, j);
+        let horoscopo = thedate.getSign();
+        return horoscopo;
+    }
+
+    function eliminaritemsDOM(item) {
+        item.each(function(index) {
+            $(this).fadeOut(400, function() {
+                $(this).remove();
+            });
+        });
+    }
+
+    function anadiritemDOM(item) {
+        item.each(function(index) {
+            $(this).delay(index * 400).fadeIn(1000);
+        });
+        $('#refresca').delay(2000).fadeIn(400);
+    }
+
+    $(document).ready(init);
+
+</script>
+
+</html>
