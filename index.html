@@ -91,7 +91,7 @@
     </main>
     <button id="refresca" class="mb-4 shadow-inner tracking-wide shadow-xl hover:bg-gray-800 bg-gray-600 uppercase text-xl px-8 py-3 rounded-lg text-white block mx-auto">Please, show me more girls!</button>
     <footer>
-        <p class="text-center text-gray-600 text-sm">Made with <i class="fa fa-heart"></i> using Tailwind, Fontawesome, Google Sheets, Tabletop, JsonStorage, Pimpandhost and too many adult models lists and ranks.</p>
+        <p class="text-center text-gray-600 text-sm">Made with <i class="fa fa-heart"></i> using TailwindCSS, Fontawesome, Google Sheets, Tabletop, JsonStorage, Pimpandhost and too many adult models lists and ranks.</p>
     </footer>
     <template id="miseccion">
         <section class="group actriz w-auto relative m-4 p-2 shadow-lg bg-white rounded-lg overflow-hidden">
@@ -104,7 +104,7 @@
                 <div class="pais f32 absolute top-0 mt-8 p-0 border-1 rounded-sm border-solid border-gray-800"></div>
                 <div class="mt-0 ml-4">
                     <h3 class="nombre -mt-1 mb-1 text-2xl capitalize leading-tight font-semibold text-gray-900"></h3>
-                    <div class="datos -mt-1">
+                    <div class="datos1 -mt-1">
                     </div>
                     <div class="datos2 mt-1">
                     </div>
@@ -370,20 +370,20 @@
                 miplantilla.find('.pais').html('<span class="flag ' + item.countrycode + '" title="' + item.birthplace + '"></span>');
             }
             if (item.started.length > 0) {
-                miplantilla.find('.datos2').append('<span title="experience" class="experiencia bg-teal-500 text-sm px-2 py-1 rounded-md text-white uppercase"><i class="fa fa-compass"></i> ' + miexperiencia + ' y. pro </span>');
+                miplantilla.find('.datos2').append('<span title="experience" class="experiencia bg-teal-500 text-xs px-2 py-1 rounded-md text-white uppercase"><i class="fa fa-compass"></i> ' + miexperiencia + ' y. pro </span>');
             }
 
             if (item.finished.length > 0) {
-                miplantilla.find('.datos2').append('<span class="bg-gray-600 text-sm ml-1 px-2 py-1 rounded-md text-white uppercase">Retired in ' + item.finished + '</span>');
+                miplantilla.find('.datos2').append('<span class="bg-gray-600 text-xs ml-1 px-2 py-1 rounded-md text-white uppercase">Retired in ' + item.finished + '</span>');
             }
             if (item.height.length > 0) {
-                miplantilla.find('.adicional').append('<span class="altura text-sm text-gray-600"><i class="fa fa-arrows-alt-v text-gray-800"></i>' + item.height + ' cm </span>');
+                miplantilla.find('.adicional').append('<span class="altura text-sm text-gray-600"><i class="fa fa-arrows-alt-v text-gray-600"></i> ' + item.height + ' cm </span>');
             }
             if (item.weight.length > 0) {
-                miplantilla.find('.adicional').append('<span class="peso ml-3 text-sm text-gray-600"><i class="fa fa-weight text-gray-800"></i>' + item.weight + ' kg </span>');
+                miplantilla.find('.adicional').append('<span class="peso ml-3 text-sm text-gray-600"><i class="fa fa-weight text-gray-600"></i> ' + item.weight + ' kg </span>');
             }
             if (item.eyes.length > 0) {
-                miplantilla.find('.adicional').append('<span class="ojos ml-3 text-sm text-gray-600"><i class="fa fa-eye text-gray-800"></i> ' + item.eyes + '</span>');
+                miplantilla.find('.adicional').append('<span class="ojos ml-3 text-sm text-gray-600"><i class="fa fa-eye text-gray-600"></i> ' + item.eyes + '</span>');
             }
 
             miplantilla.find('.nombre').html(item.name1);
