@@ -109,10 +109,6 @@
                     <div class="datos2 mt-1">
                     </div>
                     <p class="adicional mt-2 text-gray-400">
-                        <i class="fa fa-female fa-lg"></i>
-                        <i class="fa fa-venus-double fa-lg"></i>
-                        <i class="fa fa-venus-mars fa-lg"></i>
-                        <i class="fa fa-mask fa-lg"></i>
                     </p>
                 </div>
                 <div class="rating border-solid border-2 border-gray-400 rounded-lg -mt-6 mr-1 col-span-2 bg-gray-300 ml-auto text-center p-3 text-gray-600"></div>
@@ -133,6 +129,7 @@
 <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.15/lodash.min.js"></script>
 <script src="tabletop.min.js"></script>
+<script src="parameters.js"></script>
 <script>
     Date.prototype.getSign = function() {
         var zodiaque = new Array("aries", "taurus", "gemini", "cancer", "leo", "virgo", "libra", "scorpio", "sagittarius", "capricorn", "aquarius", "pisces"),
@@ -147,7 +144,7 @@
         $('#refresca').hide();
         var app = {};
         Tabletop.init({
-            key: 'https://docs.google.com/spreadsheets/d/1Zc7PJoe_2rUbxaTWy0RCqwBlWhLn9vZNMUZlkhyz8Ns/edit?usp=sharing',
+            key: keys.google,
             simpleSheet: false
         }).then(function(data, tabletop) {
             console.log('cargada google sheet');
@@ -160,7 +157,7 @@
                 item.thumb = mispics.find(pic => pic.kind === "face");
             });
 
-            $.get("https://jsonstorage.net/api/items/758eb8f1-76ea-4d94-bbae-ce7673f7feea",
+            $.get(keys.jsonstorage,
                 function(data, textStatus, jqXHR) {
                     console.log('cargada jsonstorage');
                     app.scores = data;
@@ -380,41 +377,20 @@
                 miplantilla.find('.datos2').append('<span class="bg-gray-600 text-sm ml-1 px-2 py-1 rounded-md text-white uppercase">Retired in ' + item.finished + '</span>');
             }
             if (item.height.length > 0) {
-                miplantilla.find('.datos').append('<span class="altura text-sm text-gray-600">' + item.height + ' cm <i class="fa fa-arrows-alt-v text-gray-400"></i></span>');
+                miplantilla.find('.adicional').append('<span class="altura text-sm text-gray-600"><i class="fa fa-arrows-alt-v text-gray-800"></i>' + item.height + ' cm </span>');
             }
             if (item.weight.length > 0) {
-                miplantilla.find('.datos').append('<span class="peso ml-3 text-sm text-gray-600">' + item.weight + ' kg <i class="fa fa-weight text-gray-400"></i></span>');
+                miplantilla.find('.adicional').append('<span class="peso ml-3 text-sm text-gray-600"><i class="fa fa-weight text-gray-800"></i>' + item.weight + ' kg </span>');
             }
             if (item.eyes.length > 0) {
-                miplantilla.find('.datos').append('<span class="ojos ml-3 text-sm text-gray-600"><i class="fa fa-eye text-gray-400"></i> ' + item.eyes + '</span>');
-            }
-
-            if (item.solo.length > 0) {
-                miplantilla.find('.adicional .fa-female')
-                    .addClass('text-teal-800')
-                    .attr('aria-label', item.solo);
-            }
-            if (item.lesbo.length > 0) {
-                miplantilla.find('.adicional .fa-venus-double')
-                    .addClass('text-teal-800')
-                    .attr('aria-label', item.lesbo);
-            }
-            if (item.males.length > 0) {
-                miplantilla.find('.adicional .fa-venus-mars')
-                    .addClass('text-teal-800')
-                    .attr('aria-label', item.males);
-            }
-            if (item.kinks.length > 0) {
-                miplantilla.find('.adicional .fa-mask')
-                    .addClass('text-teal-800')
-                    .attr('aria-label', item.kinks);
+                miplantilla.find('.adicional').append('<span class="ojos ml-3 text-sm text-gray-600"><i class="fa fa-eye text-gray-800"></i> ' + item.eyes + '</span>');
             }
 
             miplantilla.find('.nombre').html(item.name1);
 
             if (item.birthdate.length > 0) {
-                miplantilla.find('.nombre').append('<span class="ml-3 edad text-sm text-indigo-600 font-bold">' + miedad + ' y.o.</span>');
-                miplantilla.find('.nombre').append('<span class="uppercase astro text-sm ml-3 text-gray-500">' + misigno + '</span>');
+                miplantilla.find('.datos1').append('<span class="ml-3 edad text-sm text-indigo-600 font-bold">' + miedad + ' y.o.</span>');
+                miplantilla.find('.datos1').append('<span class="uppercase astro text-sm ml-3 text-gray-500">' + misigno + '</span>');
             }
             if (miscore) {
                 miplantilla.find('.rating').append('<p class="text-2xl mb-2 leading-tight text-teal-800"><i class="fa fa-crown"></i><br>' + miscore.rating + ' </p><p class="uppercase text-xs"> ' + (miscore.matches === 0 ? 'no' : miscore.matches) + ' matches</p>');
@@ -477,7 +453,7 @@
     function guardarscores(data) {
         let midata = JSON.stringify(data, null, 2);
         $.ajax({
-            url: "https://jsonstorage.net/api/items/758eb8f1-76ea-4d94-bbae-ce7673f7feea",
+            url: keys.jsonstorage,
             type: "PUT",
             data: midata,
             contentType: "application/json; charset=utf-8",
