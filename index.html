@@ -80,7 +80,6 @@
             border-radius: 3px;
             pointer-events: none;
         }
-
     </style>
 
 </head>
@@ -100,7 +99,7 @@
                 <img class="miimagen" src="">
             </div>
             <div class="midata bg-white flex py-1 px-2 absolute bottom-0 left-0 right-0 transition-all transform translate-y-16 group-hover:translate-y-0 h-32">
-                <img class="imagen h-32 w-32 border-4 border-solid border-white transform -translate-y-12 object-cover rounded-full" src="">
+                <div class="imagen overflow-hidden  h-32 w-32 border-4 border-solid border-white transform -translate-y-12 object-cover rounded-full"></div>
                 <div class="pais f32 absolute top-0 mt-8 p-0 border-1 rounded-sm border-solid border-gray-800"></div>
                 <div class="mt-0 ml-4">
                     <h3 class="nombre -mt-1 mb-1 text-2xl capitalize leading-tight font-semibold text-gray-900"></h3>
@@ -119,7 +118,7 @@
         <li class="group relative m-4 p-3 shadow-lg bg-gray-200 rounded-lg flex border-solid border-2 border-gray-400">
             <div class="number text-right w-16 mr-5 text-gray-400 text-5xl font-bold"></div>
             <div class="rating w-32 m-2 mr-5 text-center p-3 text-gray-600 bg-white rounded-lg"></div>
-            <img class="imagen h-24 w-24 border-4 border-solid border-white object-cover rounded-full" src="">
+            <div class="imagen overflow-hidden h-24 w-24 border-4 border-solid border-white object-cover rounded-full"></div>
             <h3 class="nombre ml-5 mt-4 text-3xl capitalize leading-tight font-semibold text-gray-900"></h3>
             <div class="stats ml-auto text-gray-800 text-sm font-bold"></div>
         </li>
@@ -151,10 +150,8 @@
             app.actrices = data.actresses.elements;
             app.pics = data.pics.elements;
             app.actrices.forEach(function(item) {
-                let myid = item.id;
-                let mispics = app.pics.filter(pic => pic.ref === myid);
-                item.images = mispics.filter(pic => pic.kind !== "face");
-                item.thumb = mispics.find(pic => pic.kind === "face");
+                let mypics = app.pics.filter(pic => pic.ref === item.id);
+                item.mypics = mypics;
             });
 
             $.get(keys.jsonstorage,
@@ -304,7 +301,6 @@
             app.rifa.forEach(function(item) {
                 inicializapuntos(app.scores, item);
                 pinta(item);
-
             });
             actrices = $('main .actriz');
             anadiritemDOM(actrices);
@@ -318,21 +314,19 @@
                 if (miactriz) {
                     let plantilla = $('#ranking').clone();
                     let miplantilla = $(plantilla.html());
-                    if (miactriz.thumb)
-                        miplantilla.find('.imagen').attr('src', miactriz.thumb.url);
+                    if (miactriz.face)
+                        miplantilla.find('.imagen').html(miactriz.face);
                     miplantilla.find('.number').text(index + 1);
                     miplantilla.find('.nombre').html(miactriz.name1);
                     miplantilla.find('.rating').append('<p class="leading-tight text-2xl text-teal-800 font-bold"><i class="fa fa-crown"></i> ' + item.rating + '</p> <p class="uppercase text-sm"> ' + (item.matches === 0 ? 'no' : item.matches) + ' matches</p>');
                     if (item.matches > 0) {
                         miplantilla.find('.stats')
                             .append('<span class="uppercase text-md ml-2">' + Math.round(100 * (item.wins / item.matches)) + '% wins</span>');
-                        console.log(Object.keys(item.typeofwin));
                         if (Object.keys(item.typeofwin).length > 0) {
                             let cadena = '';
                             for (kind in item.typeofwin) {
                                 cadena += '<span class="ml-2 uppercase font-normal font-gray-300">' + kind + ': ' + item.typeofwin[kind] + '</span>';
                             }
-                            console.log(cadena);
                             miplantilla.find('.stats').append(cadena);
                         }
                     }
@@ -343,8 +337,8 @@
         }
 
         function pinta(item) {
-            let mithumb = item.thumb;
-            let misfotos = item.images.filter(image => image.kind === app.categoria);
+            let mithumb = item.face;
+            let misfotos = item.mypics.filter(image => image.kind === app.categoria);
             let mifoto = _.sample(misfotos);
             let miscore = app.scores.find(score => score.id === item.id);
             let miedad = tiempodesde(item.birthdate)
@@ -356,12 +350,13 @@
             miplantilla.find('.votar').attr('data-id', item.id);
 
             if (mithumb) {
-                miplantilla.find('.imagen').attr('src', mithumb.url);
-                if (app.categoria)
-                    miplantilla.find('.miimagen').attr('src', mifoto.url);
-
-                else
-                    miplantilla.find('.miimagen').attr('src', mithumb.url);
+                miplantilla.find('.imagen').html(mithumb);
+                if (app.categoria) {
+                    miplantilla.find('.contenedorimagen').prepend(mifoto.url);
+                    let fotoorig = miplantilla.find('.contenedorimagen a').hide();
+                    let laurl = fotoorig.find('img').attr('src');
+                    miplantilla.find('.miimagen').attr('src', laurl);
+                }
             }
             if (item.link.length > 0)
                 miplantilla.find('.imagen').wrap('<a href="' + item.link + '" target="_blank"></a>');
@@ -406,14 +401,14 @@
     function pickcategory(array) {
         let salida = [];
         array.forEach(function(item) {
-            if (salida) {
-                let mycategories = item.images.map(pick => pick.kind);
-                if (mycategories.length > 0) {
-                    salida.push(mycategories);
-                } else {
-                    salida = false;
-                }
+
+            let mycategories = item.mypics.map(pick => pick.kind);
+            if (mycategories.length > 0) {
+                salida.push(mycategories);
+            } else {
+                salida = false;
             }
+
         });
         if (!salida) return null;
         let [a, b, c] = salida;
@@ -497,7 +492,4 @@
     }
 
     $(document).ready(init);
-
-</script>
-
-</html>
+</script></html>
